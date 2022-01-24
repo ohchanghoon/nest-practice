@@ -1,12 +1,14 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as config from 'config';
 
 async function bootstrap() {
   // NestFactory를 활용해 Nest 애플리케이션 생성
   // 즉, AppModule을 인자로 받아서 NestApp을 생성
   const app = await NestFactory.create(AppModule);
-  const port = 3000;
+  const serverConfig = config.get('server');
+  const port = serverConfig.port;
   // app.useGlobalPipes(
   //   new ValidationPipe({
   //     // whitelist : 데코레이터가 없는 입력값은 validator에 도달하지 못하게하는 것
