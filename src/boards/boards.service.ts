@@ -54,37 +54,4 @@ export class BoardsService {
 
     return board;
   }
-
-  // getAll(): Board[] {
-  //   return this.boards;
-  // }
-  // getPostById(id: string): Board {
-  //   const found = this.boards.find((board) => board.id === id);
-  //   if (!found) {
-  //     throw new NotFoundException(`Can't find post with id: ${id}`);
-  //   }
-  //   return found;
-  // }
-  // createPost(createPostDto: CreatePostDto) {
-  //   const { title, description } = createPostDto;
-  //   console.log(title, description);
-  //   const post: Board = {
-  //     id: uuid(),
-  //     title,
-  //     description,
-  //     status: BoardStatus.PUBLIC,
-  //   };
-  //   this.boards.push(post);
-  //   return post;
-  // }
-  // deletePost(id: string): void {
-  //   // 유효성 검사 먼저
-  //   const found = this.getPostById(id);
-  //   this.boards = this.boards.filter((post) => post.id !== found.id);
-  // }
-  // updatePostStatus(id: string, status: BoardStatus): Board {
-  //   const post = this.getPostById(id);
-  //   post.status = status;
-  //   return post;
-  // }
 }

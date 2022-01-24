@@ -34,19 +34,11 @@ export class BoardsController {
     this.logger.verbose(`${user.username} trying to get all boards`);
     return this.boardService.find(user);
   }
-  // @Get()
-  // getAll(): Board[] {
-  //   return this.boardService.getAll();
-  // }
 
   @Get('/:id')
   findOne(@Param('id') id: number): Promise<Board> {
     return this.boardService.findOne(id);
   }
-  // @Get('/:id')
-  // getPostById(@Param('id') id: string): Board {
-  //   return this.boardService.getPostById(id);
-  // }
 
   @Post()
   @UsePipes(ValidationPipe)
@@ -61,11 +53,6 @@ export class BoardsController {
     );
     return this.boardService.create(createBoardDto, user);
   }
-  // @Post()
-  // @UsePipes(ValidationPipe)
-  // createPost(@Body() createPostDto: CreatePostDto): Board {
-  //   return this.boardService.createPost(createPostDto);
-  // }
 
   @Delete('/:id')
   delete(
@@ -74,10 +61,6 @@ export class BoardsController {
   ): Promise<void> {
     return this.boardService.delete(id, user);
   }
-  // @Delete('/:id')
-  // deletePost(@Param('id') id: string): void {
-  //   this.boardService.deletePost(id);
-  // }
 
   @Patch('/:id/status')
   updateStatus(
@@ -86,11 +69,4 @@ export class BoardsController {
   ): Promise<Board> {
     return this.boardService.updateStatus(id, status);
   }
-  // @Patch('/:id/status')
-  // updatePostStatus(
-  //   @Param('id') id: string,
-  //   @Body('status', BoardStatusValidationPipe) status: BoardStatus,
-  // ): Board {
-  //   return this.boardService.updatePostStatus(id, status);
-  // }
 }
