@@ -21,7 +21,7 @@ import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/boards.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation-pipe';
 
-@Controller('boards')
+@Controller('board')
 @UseGuards(AuthGuard())
 export class BoardsController {
   private logger = new Logger('Boards');
@@ -30,9 +30,9 @@ export class BoardsController {
   constructor(private boardService: BoardsService) {}
 
   @Get()
-  getAllBoards(@GetUser() user: User): Promise<Board[]> {
+  find(@GetUser() user: User): Promise<Board[]> {
     this.logger.verbose(`${user.username} trying to get all boards`);
-    return this.boardService.getAllBoards(user);
+    return this.boardService.find(user);
   }
   // @Get()
   // getAll(): Board[] {
@@ -40,8 +40,8 @@ export class BoardsController {
   // }
 
   @Get('/:id')
-  getBoardById(@Param('id') id: number): Promise<Board> {
-    return this.boardService.getBoardById(id);
+  findOne(@Param('id') id: number): Promise<Board> {
+    return this.boardService.findOne(id);
   }
   // @Get('/:id')
   // getPostById(@Param('id') id: string): Board {
@@ -50,7 +50,7 @@ export class BoardsController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  createBoard(
+  create(
     @Body() createBoardDto: CreateBoardDto,
     @GetUser() user: User,
   ): Promise<Board> {
@@ -59,7 +59,7 @@ export class BoardsController {
         createBoardDto,
       )}`,
     );
-    return this.boardService.createBoard(createBoardDto, user);
+    return this.boardService.create(createBoardDto, user);
   }
   // @Post()
   // @UsePipes(ValidationPipe)
@@ -68,11 +68,11 @@ export class BoardsController {
   // }
 
   @Delete('/:id')
-  deleteBoard(
+  delete(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
   ): Promise<void> {
-    return this.boardService.deleteBoard(id, user);
+    return this.boardService.delete(id, user);
   }
   // @Delete('/:id')
   // deletePost(@Param('id') id: string): void {
@@ -80,11 +80,11 @@ export class BoardsController {
   // }
 
   @Patch('/:id/status')
-  updateBoardStatus(
+  updateStatus(
     @Param('id', ParseIntPipe) id: number,
     @Body('status', BoardStatusValidationPipe) status: BoardStatus,
   ): Promise<Board> {
-    return this.boardService.updateBoardStatus(id, status);
+    return this.boardService.updateStatus(id, status);
   }
   // @Patch('/:id/status')
   // updatePostStatus(

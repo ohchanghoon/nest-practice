@@ -13,7 +13,7 @@ export class BoardsService {
     @InjectRepository(BoardRepository) private boardRepository: BoardRepository,
   ) {}
 
-  async getAllBoards(user: User): Promise<Board[]> {
+  async find(user: User): Promise<Board[]> {
     // board 테이블에서 작업할 것
     const query = this.boardRepository.createQueryBuilder('board');
 
@@ -24,7 +24,7 @@ export class BoardsService {
     return boards;
   }
 
-  async getBoardById(id: number): Promise<Board> {
+  async findOne(id: number): Promise<Board> {
     const found = await this.boardRepository.findOne(id);
 
     if (!found) {
@@ -34,11 +34,11 @@ export class BoardsService {
     return found;
   }
 
-  createBoard(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
+  create(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
     return this.boardRepository.createBoard(createBoardDto, user);
   }
 
-  async deleteBoard(id: number, user: User): Promise<void> {
+  async delete(id: number, user: User): Promise<void> {
     const result = await this.boardRepository.delete({ id, user });
 
     if (!result.affected) {
@@ -46,8 +46,8 @@ export class BoardsService {
     }
   }
 
-  async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
-    const board = await this.getBoardById(id);
+  async updateStatus(id: number, status: BoardStatus): Promise<Board> {
+    const board = await this.findOne(id);
 
     board.status = status;
     await this.boardRepository.save(board);
