@@ -6,6 +6,7 @@ import { MemberModule } from './member/member.module';
 import { BoardsModule } from './boards/boards.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeORMConfig } from './boards/configs/typeorm.config';
+import { AuthModule } from './auth/auth.module';
 // 데코레이터는 클래스, 메서드 또는 속성에 대해 정의
 // 데코레이터를 선언하면 해당 정의된 속성을 주입받아 사용 가능
 @Module({
@@ -17,6 +18,7 @@ import { typeORMConfig } from './boards/configs/typeorm.config';
     UsersModule,
     MemberModule,
     BoardsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
