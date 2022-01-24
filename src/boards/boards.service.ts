@@ -34,8 +34,8 @@ export class BoardsService {
     return found;
   }
 
-  create(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
-    return this.boardRepository.createBoard(createBoardDto, user);
+  async create(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
+    return await this.boardRepository.createBoard(createBoardDto, user);
   }
 
   async delete(id: number, user: User): Promise<void> {
