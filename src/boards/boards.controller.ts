@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   ParseIntPipe,
   Patch,
@@ -23,12 +24,14 @@ import { BoardStatusValidationPipe } from './pipes/board-status-validation-pipe'
 @Controller('boards')
 @UseGuards(AuthGuard())
 export class BoardsController {
+  private logger = new Logger('Boards');
   // 접근제한자를 생성자파라미터(constructor)에 선언하면 접근 제한자가 사용된 생성자 파라미터는 암묵적으로 클래스 프로퍼티로 선언된다.
   // private : 프로퍼티 자체를 BoardsController클래스 안에서만 사용하기 위해
   constructor(private boardService: BoardsService) {}
 
   @Get()
   getAllBoards(@GetUser() user: User): Promise<Board[]> {
+    this.logger.verbose(`${user.username} trying to get all boards`);
     return this.boardService.getAllBoards(user);
   }
   // @Get()
@@ -51,6 +54,11 @@ export class BoardsController {
     @Body() createBoardDto: CreateBoardDto,
     @GetUser() user: User,
   ): Promise<Board> {
+    this.logger.verbose(
+      `${user.username} creating a new board. Payload: ${JSON.stringify(
+        createBoardDto,
+      )}`,
+    );
     return this.boardService.createBoard(createBoardDto, user);
   }
   // @Post()
