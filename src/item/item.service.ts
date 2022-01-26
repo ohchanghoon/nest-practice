@@ -11,17 +11,43 @@ export class ItemService {
     private itemRepo: Repository<Item>,
   ) {}
 
-  find(): Promise<Item[]> {
-    return this.itemRepo.find();
-  }
+  // find(): Promise<Item[]> {
+  //   return this.itemRepo.find();
+  // }
 
   async findOne(id: string): Promise<Item> {
     try {
       // findOne은 에러를 반환하지 않고, undefined를 반환해서 findOneOrFail을 사용
-      return await this.itemRepo.findOneOrFail(id);
+      return (await this.itemRepo.findOne(id)) ?? null;
+    } catch (err) {
+      console.log(err);
+
+      throw err;
+    }
+  }
+
+  async findPage(query): Promise<any> {
+    const { start, take } = query;
+    try {
+      const found = await this.findOne(start);
+      if (found) {
+        const result = await this.itemRepo.find({ skip: start - 1, take });
+        return {
+          result,
+          startId: start - 1,
+          takeId: parseInt(take),
+          lastId: result[result.length - 1].id,
+        };
+      }
+      return null;
     } catch (err) {
       throw err;
     }
+  }
+
+  async search(type): Promise<any> {
+    const result = await this.itemRepo.find(type);
+    return result;
   }
 
   async create(insertItemDto: InsertItemDto): Promise<Item> {
