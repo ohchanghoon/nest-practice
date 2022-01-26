@@ -11,9 +11,9 @@ export class ItemService {
     private itemRepo: Repository<Item>,
   ) {}
 
-  // find(): Promise<Item[]> {
-  //   return this.itemRepo.find();
-  // }
+  find(): Promise<Item[]> {
+    return this.itemRepo.find();
+  }
 
   async findOne(id: string): Promise<Item> {
     try {

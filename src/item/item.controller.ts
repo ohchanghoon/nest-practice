@@ -20,10 +20,10 @@ import { ItemService } from './item.service';
 export class ItemController {
   constructor(private itemService: ItemService) {}
 
-  // @Get()
-  // find() {
-  //   return this.itemService.find();
-  // }
+  @Get('find')
+  find() {
+    return this.itemService.find();
+  }
 
   // 질문 : param으로 받으면 위치에 따라 원하지않은곳으로 들어가버림 해결방법은 ??
   @Get('/search/type')
