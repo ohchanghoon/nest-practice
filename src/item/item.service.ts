@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { InsertItemDto, UpdateItemDto } from './dto/item.dto';
+import { InsertItemDto, PagenationDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 
 @Injectable()
@@ -18,10 +18,38 @@ export class ItemService {
   async findOne(id: string): Promise<Item> {
     try {
       // findOne은 에러를 반환하지 않고, undefined를 반환해서 findOneOrFail을 사용
-      return await this.itemRepo.findOneOrFail(id);
+      return (await this.itemRepo.findOne(id)) ?? null;
     } catch (err) {
       throw err;
     }
+  }
+
+  async findPage(pagenationDto: any): Promise<object> {
+    const { start, take } = pagenationDto;
+
+    try {
+      const found = await this.findOne(start);
+      if (found) {
+        const result = await this.itemRepo.find({
+          skip: parseInt(start) - 1,
+          take,
+        });
+        return {
+          result,
+          startId: parseInt(start),
+          takeId: parseInt(take),
+          lastId: result[result.length - 1].id,
+        };
+      }
+      return null;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async search(type: object): Promise<any> {
+    const result = await this.itemRepo.find(type);
+    return result;
   }
 
   async create(insertItemDto: InsertItemDto): Promise<Item> {

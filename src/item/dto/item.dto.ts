@@ -33,3 +33,13 @@ export class UpdateItemDto {
   @IsNumber()
   amount: number;
 }
+
+export class PagenationDto {
+  @IsNotEmpty()
+  @IsNumber()
+  start: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  take: string;
+}
