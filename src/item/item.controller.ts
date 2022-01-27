@@ -6,13 +6,14 @@ import {
   InternalServerErrorException,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
-import { InsertItemDto, UpdateItemDto } from './dto/item.dto';
+import { InsertItemDto, PagenationDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 import { ItemService } from './item.service';
 
@@ -25,16 +26,14 @@ export class ItemController {
     return this.itemService.find();
   }
 
-  // 질문 : param으로 받으면 위치에 따라 원하지않은곳으로 들어가버림 해결방법은 ??
   @Get('/search/type')
-  async search(@Query() query) {
+  async search(@Query() query: object) {
     return await this.itemService.search(query);
   }
 
-  @Get('/:id')
-  async findOne(@Param('id') id: string) {
+  @Get('find/:id')
+  async findOne(@Param('id', ParseIntPipe) id: string) {
     try {
-      // return await this.itemService.findOne(id);
       const result = await this.itemService.findOne(id);
       if (result === null) {
         return new NotFoundException(`not found id: ${id}`);
@@ -50,13 +49,15 @@ export class ItemController {
   }
 
   @Get()
-  async findPage(@Query() query) {
-    const result = await this.itemService.findPage(query);
+  // @UsePipes(ValidationPipe)
+  // query에서 한글=숫자 인데 파이프 어떻게 거는지 모르겠음.
+  async findPage(@Query() pagenationDto: PagenationDto): Promise<object> {
+    const result = await this.itemService.findPage(pagenationDto);
 
     if (result) {
       return result;
     }
-    throw new NotFoundException(`not found id: ${query.start}`);
+    throw new NotFoundException(`not found id: ${pagenationDto.start}`);
   }
 
   @Post()
@@ -77,7 +78,7 @@ export class ItemController {
 
   @Patch('/:id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: string,
     @Body() updateItemDto: UpdateItemDto,
   ): Promise<void> {
     try {
