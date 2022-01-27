@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { InsertItemDto, PagenationDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 
@@ -25,15 +25,22 @@ export class ItemService {
   }
 
   async findPage(pagenationDto: any): Promise<object> {
-    const { start, take } = pagenationDto;
+    const { start, take, name, productionYear } = pagenationDto;
 
     try {
-      const found = await this.findOne(start);
-      if (found) {
+      if (await this.findOne(start)) {
         const result = await this.itemRepo.find({
+          where: {
+            name,
+            productionYear: LessThan(productionYear),
+          },
           skip: parseInt(start) - 1,
           take,
         });
+
+        if (!result.length) {
+          return null;
+        }
         return {
           result,
           startId: parseInt(start),

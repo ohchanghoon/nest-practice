@@ -49,8 +49,6 @@ export class ItemController {
   }
 
   @Get()
-  // @UsePipes(ValidationPipe)
-  // query에서 한글=숫자 인데 파이프 어떻게 거는지 모르겠음.
   async findPage(@Query() pagenationDto: PagenationDto): Promise<object> {
     const result = await this.itemService.findPage(pagenationDto);
 
