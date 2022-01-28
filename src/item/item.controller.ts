@@ -13,7 +13,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
-import { InsertItemDto, searchTypeDto, UpdateItemDto } from './dto/item.dto';
+import { InsertItemDto, SearchTypeDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 import { ItemService } from './item.service';
 
@@ -45,7 +45,7 @@ export class ItemController {
 
   // 조건 검색
   @Get('/search')
-  async search(@Query() searchTypeDto: searchTypeDto): Promise<object> {
+  async search(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
     const result = await this.itemService.search(searchTypeDto);
 
     if (!result) {
@@ -55,7 +55,7 @@ export class ItemController {
   }
 
   @Get()
-  async findPage(@Query() searchTypeDto: searchTypeDto): Promise<object> {
+  async findPage(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
     const result = await this.itemService.findPage(searchTypeDto);
 
     if (!result) {
@@ -73,9 +73,6 @@ export class ItemController {
 
   @Delete('/:id')
   async delete(@Param('id', ParseIntPipe) id: number): Promise<Item> {
-    console.log(id);
-    console.log(typeof id);
-
     try {
       return await this.itemService.delete(id);
     } catch (err) {

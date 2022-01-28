@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, LessThan, MoreThan, Repository } from 'typeorm';
-import { InsertItemDto, searchTypeDto, UpdateItemDto } from './dto/item.dto';
+import { InsertItemDto, SearchTypeDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 
 @Injectable()
@@ -41,7 +41,7 @@ export class ItemService {
     }
   }
 
-  async search(query: searchTypeDto): Promise<object> {
+  async search(query: SearchTypeDto): Promise<object> {
     const { condition } = query;
 
     if (condition === 'more') {
@@ -50,7 +50,7 @@ export class ItemService {
     return await this.lessThanProdutionDate(query);
   }
 
-  async moreThanProdutionDate(query: searchTypeDto): Promise<object> {
+  async moreThanProdutionDate(query: SearchTypeDto): Promise<object> {
     const { start, take, name, productionDate } = query;
 
     try {
@@ -72,7 +72,7 @@ export class ItemService {
     }
   }
 
-  async lessThanProdutionDate(query: searchTypeDto): Promise<object> {
+  async lessThanProdutionDate(query: SearchTypeDto): Promise<object> {
     const { start, take, name, productionDate } = query;
 
     try {

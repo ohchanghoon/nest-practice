@@ -44,7 +44,7 @@ export class PagenationDto {
   take: string;
 }
 
-export class searchTypeDto {
+export class SearchTypeDto {
   @IsNotEmpty()
   start: number;
 
