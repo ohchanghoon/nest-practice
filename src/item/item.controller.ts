@@ -46,26 +46,13 @@ export class ItemController {
 
   // 조건 검색
   @Get('/search')
-  async search(
-    @Query('start', new DefaultValuePipe(1), ParseIntPipe) start: number,
-    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take: number,
-    @Query() searchTypeDto: SearchTypeDto,
-  ): Promise<object> {
-    if (!start) {
-      throw new NotFoundException(`can't not search start number is ${start}`);
-    }
-    return await this.itemService.search(start, take, searchTypeDto);
+  async search(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
+    return await this.itemService.search(searchTypeDto);
   }
 
   @Get()
-  async findPage(
-    @Query('start', new DefaultValuePipe(1), ParseIntPipe) start: number,
-    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take: number,
-  ): Promise<object> {
-    if (!start) {
-      throw new NotFoundException(`can't not search start number is ${start}`);
-    }
-    return await this.itemService.findPage(start, take);
+  async findPage(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
+    return await this.itemService.findPage(searchTypeDto);
   }
 
   @Post()

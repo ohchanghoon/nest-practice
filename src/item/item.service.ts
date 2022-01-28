@@ -23,7 +23,8 @@ export class ItemService {
     }
   }
 
-  async findPage(start: number, take: number): Promise<any> {
+  async findPage(searchTypeDto: SearchTypeDto): Promise<any> {
+    const { start, take } = searchTypeDto;
     try {
       const result = await this.itemRepo.find({
         skip: start - 1,
@@ -37,25 +38,17 @@ export class ItemService {
     }
   }
 
-  async search(
-    start: number,
-    take: number,
-    query: SearchTypeDto,
-  ): Promise<object> {
+  async search(query: SearchTypeDto): Promise<object> {
     const { condition } = query;
 
     if (condition === 'more') {
-      return await this.moreThanProdutionDate(start, take, query);
+      return await this.moreThanProdutionDate(query);
     }
-    return await this.lessThanProdutionDate(start, take, query);
+    return await this.lessThanProdutionDate(query);
   }
 
-  async moreThanProdutionDate(
-    start: number,
-    take: number,
-    query: SearchTypeDto,
-  ): Promise<object> {
-    const { name, productionDate } = query;
+  async moreThanProdutionDate(query: SearchTypeDto): Promise<object> {
+    const { start, take, name, productionDate } = query;
 
     try {
       const found = await this.itemRepo.find({
@@ -74,12 +67,8 @@ export class ItemService {
     }
   }
 
-  async lessThanProdutionDate(
-    start: number,
-    take: number,
-    query: SearchTypeDto,
-  ): Promise<object> {
-    const { name, productionDate } = query;
+  async lessThanProdutionDate(query: SearchTypeDto): Promise<object> {
+    const { start, take, name, productionDate } = query;
 
     try {
       const found = await this.itemRepo.find({
