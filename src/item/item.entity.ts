@@ -12,7 +12,7 @@ export class Item extends BaseEntity {
   brand: string;
 
   @Column()
-  productionYear: number;
+  productionDate: number;
 
   @Column()
   amount: number;

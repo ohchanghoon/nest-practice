@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, Repository } from 'typeorm';
-import { InsertItemDto, PagenationDto, UpdateItemDto } from './dto/item.dto';
+import { In, LessThan, MoreThan, Repository } from 'typeorm';
+import { InsertItemDto, searchTypeDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 
 @Injectable()
@@ -17,46 +17,90 @@ export class ItemService {
 
   async findOne(id: string): Promise<Item> {
     try {
-      // findOne은 에러를 반환하지 않고, undefined를 반환해서 findOneOrFail을 사용
       return (await this.itemRepo.findOne(id)) ?? null;
     } catch (err) {
       throw err;
     }
   }
 
-  async findPage(pagenationDto: any): Promise<object> {
-    const { start, take, name, productionYear } = pagenationDto;
+  async findPage(pagenationDto: any): Promise<any> {
+    const { start, take } = pagenationDto;
 
     try {
-      if (await this.findOne(start)) {
-        const result = await this.itemRepo.find({
-          where: {
-            name,
-            productionYear: LessThan(productionYear),
-          },
-          skip: parseInt(start) - 1,
-          take,
-        });
+      const result = await this.itemRepo.find({
+        skip: start - 1,
+        take,
+      });
 
-        if (!result.length) {
-          return null;
-        }
-        return {
-          result,
-          startId: parseInt(start),
-          takeId: parseInt(take),
-          lastId: result[result.length - 1].id,
-        };
+      if (!result.length) {
+        return null;
       }
-      return null;
+      return this.searchList(result);
     } catch (err) {
       throw err;
     }
   }
 
-  async search(type: object): Promise<any> {
-    const result = await this.itemRepo.find(type);
-    return result;
+  async search(query: searchTypeDto): Promise<object> {
+    const { condition } = query;
+
+    if (condition === 'more') {
+      return await this.moreThanProdutionDate(query);
+    }
+    return await this.lessThanProdutionDate(query);
+  }
+
+  async moreThanProdutionDate(query: searchTypeDto): Promise<object> {
+    const { start, take, name, productionDate } = query;
+
+    try {
+      const result = await this.itemRepo.find({
+        where: {
+          name: In([...name]),
+          productionDate: MoreThan(productionDate),
+        },
+        skip: start - 1,
+        take,
+      });
+
+      if (!result.length) {
+        return null;
+      }
+      return this.searchList(result);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async lessThanProdutionDate(query: searchTypeDto): Promise<object> {
+    const { start, take, name, productionDate } = query;
+
+    try {
+      const result = await this.itemRepo.find({
+        where: {
+          name: In([...name]),
+          productionDate: LessThan(productionDate),
+        },
+        skip: start - 1,
+        take,
+      });
+
+      if (!result) {
+        return null;
+      }
+      return this.searchList(result);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  private searchList(result: Item[]): object | PromiseLike<object> {
+    return {
+      result,
+      startId: result[0].id,
+      getIds: result.length,
+      lastId: result[result.length - 1].id,
+    };
   }
 
   async create(insertItemDto: InsertItemDto): Promise<Item> {
@@ -76,7 +120,7 @@ export class ItemService {
       const findOne = await this.findOne(id);
 
       findOne.name = updateItemDto.name;
-      findOne.productionYear = updateItemDto.productionYear;
+      findOne.productionDate = updateItemDto.productionDate;
       findOne.amount = updateItemDto.amount;
 
       await this.create(findOne);

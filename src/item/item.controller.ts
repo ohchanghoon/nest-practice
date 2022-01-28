@@ -13,7 +13,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
-import { InsertItemDto, PagenationDto, UpdateItemDto } from './dto/item.dto';
+import { InsertItemDto, searchTypeDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 import { ItemService } from './item.service';
 
@@ -24,11 +24,6 @@ export class ItemController {
   @Get('find')
   find() {
     return this.itemService.find();
-  }
-
-  @Get('/search/type')
-  async search(@Query() query: object) {
-    return await this.itemService.search(query);
   }
 
   @Get('find/:id')
@@ -48,14 +43,25 @@ export class ItemController {
     }
   }
 
-  @Get()
-  async findPage(@Query() pagenationDto: PagenationDto): Promise<object> {
-    const result = await this.itemService.findPage(pagenationDto);
+  // 조건 검색
+  @Get('/search')
+  async search(@Query() searchTypeDto: searchTypeDto): Promise<object> {
+    const result = await this.itemService.search(searchTypeDto);
 
-    if (result) {
-      return result;
+    if (!result) {
+      throw new NotFoundException(`not found list`);
     }
-    throw new NotFoundException(`not found id: ${pagenationDto.start}`);
+    return result;
+  }
+
+  @Get()
+  async findPage(@Query() searchTypeDto: searchTypeDto): Promise<object> {
+    const result = await this.itemService.findPage(searchTypeDto);
+
+    if (!result) {
+      throw new NotFoundException(`not found list`);
+    }
+    return result;
   }
 
   @Post()

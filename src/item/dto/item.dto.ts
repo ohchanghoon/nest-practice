@@ -11,7 +11,7 @@ export class InsertItemDto {
 
   @IsNotEmpty()
   @IsNumber()
-  productionYear: number;
+  productionDate: number;
 
   @IsNotEmpty()
   @IsNumber()
@@ -27,7 +27,7 @@ export class UpdateItemDto {
 
   @IsNotEmpty()
   @IsNumber()
-  productionYear: number;
+  productionDate: number;
 
   @IsNotEmpty()
   @IsNumber()
@@ -37,9 +37,27 @@ export class UpdateItemDto {
 export class PagenationDto {
   @IsNotEmpty()
   @IsNumber()
-  start: string;
+  start: number;
 
   @IsNotEmpty()
   @IsNumber()
   take: string;
+}
+
+export class searchTypeDto {
+  @IsNotEmpty()
+  start: number;
+
+  @IsNotEmpty()
+  take: number;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  productionDate: number;
+
+  @IsString()
+  condition: string;
 }
