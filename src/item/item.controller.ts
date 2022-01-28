@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   InternalServerErrorException,
@@ -45,23 +46,26 @@ export class ItemController {
 
   // 조건 검색
   @Get('/search')
-  async search(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
-    const result = await this.itemService.search(searchTypeDto);
-
-    if (!result) {
-      throw new NotFoundException(`not found list`);
+  async search(
+    @Query('start', new DefaultValuePipe(1), ParseIntPipe) start: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take: number,
+    @Query() searchTypeDto: SearchTypeDto,
+  ): Promise<object> {
+    if (!start) {
+      throw new NotFoundException(`can't not search start number is ${start}`);
     }
-    return result;
+    return await this.itemService.search(start, take, searchTypeDto);
   }
 
   @Get()
-  async findPage(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
-    const result = await this.itemService.findPage(searchTypeDto);
-
-    if (!result) {
-      throw new NotFoundException(`not found list`);
+  async findPage(
+    @Query('start', new DefaultValuePipe(1), ParseIntPipe) start: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take: number,
+  ): Promise<object> {
+    if (!start) {
+      throw new NotFoundException(`can't not search start number is ${start}`);
     }
-    return result;
+    return await this.itemService.findPage(start, take);
   }
 
   @Post()

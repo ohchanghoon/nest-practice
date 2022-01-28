@@ -23,38 +23,42 @@ export class ItemService {
     }
   }
 
-  async findPage(pagenationDto: any): Promise<any> {
-    const { start, take } = pagenationDto;
-
+  async findPage(start: number, take: number): Promise<any> {
     try {
       const result = await this.itemRepo.find({
         skip: start - 1,
         take,
       });
 
-      if (!result.length) {
-        return null;
-      }
+      if (!result.length) return result;
       return this.searchList(result);
     } catch (err) {
       throw err;
     }
   }
 
-  async search(query: SearchTypeDto): Promise<object> {
+  async search(
+    start: number,
+    take: number,
+    query: SearchTypeDto,
+  ): Promise<object> {
     const { condition } = query;
 
     if (condition === 'more') {
-      return await this.moreThanProdutionDate(query);
+      return await this.moreThanProdutionDate(start, take, query);
     }
-    return await this.lessThanProdutionDate(query);
+    return await this.lessThanProdutionDate(start, take, query);
   }
 
-  async moreThanProdutionDate(query: SearchTypeDto): Promise<object> {
-    const { start, take, name, productionDate } = query;
+  async moreThanProdutionDate(
+    start: number,
+    take: number,
+    query: SearchTypeDto,
+  ): Promise<object> {
+    const { name, productionDate } = query;
 
     try {
-      const result = await this.itemRepo.find({
+      const found = await this.itemRepo.find({
         where: {
           name: In([...name]),
           productionDate: MoreThan(productionDate),
@@ -63,20 +67,22 @@ export class ItemService {
         take,
       });
 
-      if (!result.length) {
-        return null;
-      }
-      return this.searchList(result);
+      if (!found.length) return found;
+      return this.searchList(found);
     } catch (err) {
       throw err;
     }
   }
 
-  async lessThanProdutionDate(query: SearchTypeDto): Promise<object> {
-    const { start, take, name, productionDate } = query;
+  async lessThanProdutionDate(
+    start: number,
+    take: number,
+    query: SearchTypeDto,
+  ): Promise<object> {
+    const { name, productionDate } = query;
 
     try {
-      const result = await this.itemRepo.find({
+      const found = await this.itemRepo.find({
         where: {
           name: In([...name]),
           productionDate: LessThan(productionDate),
@@ -85,21 +91,19 @@ export class ItemService {
         take,
       });
 
-      if (!result) {
-        return null;
-      }
-      return this.searchList(result);
+      if (!found) return found;
+      return this.searchList(found);
     } catch (err) {
       throw err;
     }
   }
 
-  private searchList(result: Item[]): object | PromiseLike<object> {
+  private searchList(found: Item[]): object | PromiseLike<object> {
     return {
-      result,
-      startId: result[0].id,
-      getIds: result.length,
-      lastId: result[result.length - 1].id,
+      found,
+      startId: found[0].id,
+      getIds: found.length,
+      lastId: found[found.length - 1].id,
     };
   }
 

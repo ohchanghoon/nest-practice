@@ -46,12 +46,6 @@ export class PagenationDto {
 
 export class SearchTypeDto {
   @IsNotEmpty()
-  start: number;
-
-  @IsNotEmpty()
-  take: number;
-
-  @IsNotEmpty()
   @IsString()
   name: string;
 
