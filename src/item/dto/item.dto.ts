@@ -1,13 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsNumberString,
-  IsString,
-  Min,
-} from 'class-validator';
-import { type } from 'os';
+import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 
 export class InsertItemDto {
   @IsNotEmpty()
