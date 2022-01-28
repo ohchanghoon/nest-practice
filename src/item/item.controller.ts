@@ -27,7 +27,7 @@ export class ItemController {
   }
 
   @Get('find/:id')
-  async findOne(@Param('id', ParseIntPipe) id: string) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     try {
       const result = await this.itemService.findOne(id);
       if (result === null) {
@@ -72,7 +72,10 @@ export class ItemController {
   }
 
   @Delete('/:id')
-  async delete(@Param('id') id: string): Promise<Item> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<Item> {
+    console.log(id);
+    console.log(typeof id);
+
     try {
       return await this.itemService.delete(id);
     } catch (err) {
@@ -82,7 +85,7 @@ export class ItemController {
 
   @Patch('/:id')
   async update(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateItemDto: UpdateItemDto,
   ): Promise<void> {
     try {

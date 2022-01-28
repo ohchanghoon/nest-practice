@@ -15,7 +15,7 @@ export class ItemService {
     return this.itemRepo.find();
   }
 
-  async findOne(id: string): Promise<Item> {
+  async findOne(id: number): Promise<Item> {
     try {
       return (await this.itemRepo.findOne(id)) ?? null;
     } catch (err) {
@@ -107,7 +107,7 @@ export class ItemService {
     return await this.itemRepo.save(insertItemDto);
   }
 
-  async delete(id: string): Promise<Item> {
+  async delete(id: number): Promise<Item> {
     try {
       return await this.itemRepo.remove(await this.findOne(id));
     } catch (err) {
@@ -115,7 +115,7 @@ export class ItemService {
     }
   }
 
-  async update(id: string, updateItemDto: UpdateItemDto): Promise<void> {
+  async update(id: number, updateItemDto: UpdateItemDto): Promise<void> {
     try {
       const findOne = await this.findOne(id);
 
