@@ -5,15 +5,24 @@ export class Item extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   brand: string;
 
-  @Column()
+  @Column({ nullable: true })
   productionDate: number;
 
-  @Column()
+  @Column({ nullable: true })
   amount: number;
+
+  // @Column({ nullable: true })
+  // nickName: string;
+
+  // @Column({ nullable: true })
+  // age: number;
+
+  // @Column({ nullable: true })
+  // birthday: number;
 }
