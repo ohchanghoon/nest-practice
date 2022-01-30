@@ -13,7 +13,11 @@ export class BoardsService {
     @InjectRepository(BoardRepository) private boardRepository: BoardRepository,
   ) {}
 
-  async find(user: User): Promise<Board[]> {
+  async find(): Promise<Board[]> {
+    return this.boardRepository.find();
+  }
+
+  async userFind(user: User): Promise<Board[]> {
     // board 테이블에서 작업할 것
     const query = this.boardRepository.createQueryBuilder('board');
 
