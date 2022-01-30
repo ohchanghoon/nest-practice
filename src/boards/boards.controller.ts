@@ -30,9 +30,14 @@ export class BoardsController {
   constructor(private boardService: BoardsService) {}
 
   @Get()
-  find(@GetUser() user: User): Promise<Board[]> {
+  find(): Promise<Board[]> {
+    return this.boardService.find();
+  }
+
+  @Get('user')
+  userFind(@GetUser() user: User): Promise<Board[]> {
     this.logger.verbose(`${user.username} trying to get all boards`);
-    return this.boardService.find(user);
+    return this.boardService.userFind(user);
   }
 
   @Get('/:id')
