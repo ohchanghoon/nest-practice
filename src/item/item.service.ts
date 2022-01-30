@@ -61,53 +61,6 @@ export class ItemService {
     return this.searchList(found);
   }
 
-  // async moreThanProdutionDate(query: SearchTypeDto): Promise<object> {
-  //   const { start, take, name, productionDate } = query;
-
-  //   try {
-  //     const found = await this.itemRepo.find({
-  //       where: {
-  //         name: In([...name]),
-  //         productionDate: MoreThan(productionDate),
-  //       },
-  //       skip: start - 1,
-  //       take,
-  //     });
-
-  //     if (!found.length) return found;
-  //     return this.searchList(found);
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // }
-
-  // async lessThanProdutionDate(query: SearchTypeDto): Promise<object> {
-  //   const { start, take, name, productionDate } = query;
-
-  //   try {
-  //     const found = await this.itemRepo.find({
-  //       where: {
-  //         name: In([...name]),
-  //         productionDate: LessThan(productionDate),
-  //       },
-  //       skip: start - 1,
-  //       take,
-  //     });
-
-  //     if (!found) return found;
-  //     return this.searchList(found);
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // }
-
-  // async search(searchTypeDto: SearchTypeDto): Promise<object> {
-  //   const name = searchTypeDto.name__equal.toString().split(',');
-  //   console.log(name);
-
-  //   return { success: true };
-  // }
-
   private searchList(found: Item[]): object | PromiseLike<object> {
     return {
       found,
