@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BoardRepository } from './board.repository';
 import { Board } from './board.entity';
 import { User } from 'src/auth/user.entity';
+import { getRepository } from 'typeorm';
 
 // 종속성을 주입하는 용도로써 다른 인젝터블데코레이터로 감싸서 모듈로 제공하며, 애플리케이션 전체에서 사용할 수 있다.
 @Injectable()
@@ -36,6 +37,67 @@ export class BoardsService {
     }
 
     return found;
+  }
+
+  async searchFilter(query): Promise<any> {
+    const arr = Object.keys(query);
+    const values = Object.values(query);
+    const searchType: any = {
+      username: String,
+      nickname: String,
+      birthday: String,
+      age: Number,
+    };
+    let searchQuery = '';
+
+    for (let i = 0; i < arr.length; i += 1) {
+      const searchItem = arr[i].split('__')[0];
+      const searchCondition = arr[i].split('__')[1];
+
+      if (searchCondition === 'equal') {
+        if (i < arr.length - 1) {
+          searchQuery += `user.${searchItem} = :${searchItem} AND `;
+          searchType[searchItem] = values[i];
+        } else {
+          searchQuery += `user.${searchItem} = :${searchItem}`;
+          searchType[searchItem] = values[i];
+        }
+      } else if (searchCondition === 'notequal') {
+        if (i < arr.length - 1) {
+          searchQuery += `user.${searchItem} != :${searchItem} AND `;
+          searchType[searchItem] = values[i];
+        } else {
+          searchQuery += `user.${searchItem} != :${searchItem}`;
+          searchType[searchItem] = values[i];
+        }
+      } else if (searchCondition === 'gte') {
+        if (i < arr.length - 1) {
+          searchQuery += `user.${searchItem} > :${searchItem} AND `;
+          searchType[searchItem] = values[i];
+        } else {
+          searchQuery += `user.${searchItem} > :${searchItem}`;
+          searchType[searchItem] = values[i];
+        }
+      } else {
+        if (i < arr.length - 1) {
+          searchQuery += `user.${searchItem} < :${searchItem} AND `;
+          searchType[searchItem] = values[i];
+        } else {
+          searchQuery += `user.${searchItem} < :${searchItem}`;
+          searchType[searchItem] = values[i];
+        }
+      }
+    }
+
+    const result = await getRepository(Board)
+      .createQueryBuilder('board')
+      .leftJoinAndSelect('board.user', 'user')
+      .where(`${searchQuery}`, {
+        ...searchType,
+      })
+      .getMany();
+
+    return result;
   }
 
   async create(createBoardDto: CreateBoardDto, user: User): Promise<Board> {

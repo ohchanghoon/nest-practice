@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -38,6 +39,11 @@ export class BoardsController {
   userFind(@GetUser() user: User): Promise<Board[]> {
     this.logger.verbose(`${user.username} trying to get all boards`);
     return this.boardService.userFind(user);
+  }
+
+  @Get('/search')
+  async searchFilter(@Query() query: any): Promise<any> {
+    return await this.boardService.searchFilter(query);
   }
 
   @Get('/:id')

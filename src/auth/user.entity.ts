@@ -1,3 +1,5 @@
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 import { Board } from 'src/boards/board.entity';
 import {
   BaseEntity,
@@ -15,10 +17,24 @@ export class User extends BaseEntity {
   id: number;
 
   @Column()
+  @IsNotEmpty()
   username: string;
 
   @Column()
+  @IsNotEmpty()
   password: string;
+
+  @Column({ nullable: true })
+  nickname: string;
+
+  @Column({ nullable: true })
+  @IsNumber()
+  @Type(() => Number)
+  age: number;
+
+  @Column({ nullable: true })
+  @IsNumber()
+  birthday: string;
 
   @OneToMany((type) => Board, (board) => board.user, { eager: true })
   boards: Board[];

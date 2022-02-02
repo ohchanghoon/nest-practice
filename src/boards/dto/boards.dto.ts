@@ -9,4 +9,10 @@ export class CreateBoardDto {
 
   @IsNotEmpty()
   description: string;
+
+  nickName: string;
+
+  age: number;
+
+  birthday: number;
 }
