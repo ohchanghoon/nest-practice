@@ -19,7 +19,7 @@ import { User } from 'src/auth/user.entity';
 import { BoardStatus } from './board-status.enum';
 import { Board } from './board.entity';
 import { BoardsService } from './boards.service';
-import { CreateBoardDto } from './dto/boards.dto';
+import { CreateBoardDto, SearchBoardDto } from './dto/boards.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation-pipe';
 
 @Controller('board')
@@ -42,7 +42,7 @@ export class BoardsController {
   }
 
   @Get('/search')
-  async searchFilter(@Query() query: any): Promise<any> {
+  async searchFilter(@Query() query: SearchBoardDto): Promise<object> {
     return await this.boardService.searchFilter(query);
   }
 

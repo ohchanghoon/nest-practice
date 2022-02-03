@@ -39,10 +39,10 @@ export class BoardsService {
     return found;
   }
 
-  async searchFilter(query): Promise<any> {
+  async searchFilter(query): Promise<object> {
     const arr = Object.keys(query);
     const values = Object.values(query);
-    const searchType: any = {
+    const searchType: object = {
       username: String,
       nickname: String,
       birthday: String,
