@@ -40,6 +40,8 @@ export class BoardsService {
   }
 
   async searchFilter(query: SearchBoardDto): Promise<object> {
+    console.log(query);
+
     const arr = Object.keys(query);
     const values = Object.values(query);
     const searchType: object = {
