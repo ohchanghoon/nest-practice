@@ -54,6 +54,7 @@ export class BoardsService {
       const searchItem = arr[i].split('__')[0];
       const searchCondition = arr[i].split('__')[1];
       let operator = '';
+      let extra = '';
 
       switch (searchCondition) {
         case 'equal':
@@ -70,13 +71,17 @@ export class BoardsService {
           break;
       }
 
-      if (i < arr.length - 1) {
-        searchQuery += `user.${searchItem} ${operator} :${searchItem} AND `;
-        searchType[searchItem] = values[i];
-      } else {
-        searchQuery += `user.${searchItem} ${operator} :${searchItem}`;
-        searchType[searchItem] = values[i];
+      switch (i < arr.length - 1) {
+        case true:
+          extra = 'AND ';
+          break;
+        case false:
+          extra = '';
+          break;
       }
+
+      searchQuery += `user.${searchItem} ${operator} :${searchItem} ${extra}`;
+      searchType[searchItem] = values[i];
     }
 
     const result = await getRepository(Board)
