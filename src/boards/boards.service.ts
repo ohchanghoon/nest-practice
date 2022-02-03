@@ -53,39 +53,29 @@ export class BoardsService {
     for (let i = 0; i < arr.length; i += 1) {
       const searchItem = arr[i].split('__')[0];
       const searchCondition = arr[i].split('__')[1];
+      let operator = '';
 
-      if (searchCondition === 'equal') {
-        if (i < arr.length - 1) {
-          searchQuery += `user.${searchItem} = :${searchItem} AND `;
-          searchType[searchItem] = values[i];
-        } else {
-          searchQuery += `user.${searchItem} = :${searchItem}`;
-          searchType[searchItem] = values[i];
-        }
-      } else if (searchCondition === 'notequal') {
-        if (i < arr.length - 1) {
-          searchQuery += `user.${searchItem} != :${searchItem} AND `;
-          searchType[searchItem] = values[i];
-        } else {
-          searchQuery += `user.${searchItem} != :${searchItem}`;
-          searchType[searchItem] = values[i];
-        }
-      } else if (searchCondition === 'gte') {
-        if (i < arr.length - 1) {
-          searchQuery += `user.${searchItem} > :${searchItem} AND `;
-          searchType[searchItem] = values[i];
-        } else {
-          searchQuery += `user.${searchItem} > :${searchItem}`;
-          searchType[searchItem] = values[i];
-        }
+      switch (searchCondition) {
+        case 'equal':
+          operator = '=';
+          break;
+        case 'notequal':
+          operator = '!=';
+          break;
+        case 'gte':
+          operator = '>';
+          break;
+        case 'lte':
+          operator = '<';
+          break;
+      }
+
+      if (i < arr.length - 1) {
+        searchQuery += `user.${searchItem} ${operator} :${searchItem} AND `;
+        searchType[searchItem] = values[i];
       } else {
-        if (i < arr.length - 1) {
-          searchQuery += `user.${searchItem} < :${searchItem} AND `;
-          searchType[searchItem] = values[i];
-        } else {
-          searchQuery += `user.${searchItem} < :${searchItem}`;
-          searchType[searchItem] = values[i];
-        }
+        searchQuery += `user.${searchItem} ${operator} :${searchItem}`;
+        searchType[searchItem] = values[i];
       }
     }
 
