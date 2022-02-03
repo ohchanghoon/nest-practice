@@ -4,6 +4,7 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BoardStatus } from './board-status.enum';
@@ -24,4 +25,7 @@ export class Board extends BaseEntity {
 
   @ManyToOne((type) => User, (user) => user.boards, { eager: false })
   user: User;
+
+  @OneToMany((type) => Board, (board) => board.comment)
+  comment: Board[];
 }
