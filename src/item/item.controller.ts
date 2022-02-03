@@ -13,7 +13,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
-import { InsertItemDto, PagenationDto, UpdateItemDto } from './dto/item.dto';
+import { InsertItemDto, SearchTypeDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 import { ItemService } from './item.service';
 
@@ -26,13 +26,8 @@ export class ItemController {
     return this.itemService.find();
   }
 
-  @Get('/search/type')
-  async search(@Query() query: object) {
-    return await this.itemService.search(query);
-  }
-
   @Get('find/:id')
-  async findOne(@Param('id', ParseIntPipe) id: string) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     try {
       const result = await this.itemService.findOne(id);
       if (result === null) {
@@ -48,16 +43,15 @@ export class ItemController {
     }
   }
 
-  @Get()
-  // @UsePipes(ValidationPipe)
-  // query에서 한글=숫자 인데 파이프 어떻게 거는지 모르겠음.
-  async findPage(@Query() pagenationDto: PagenationDto): Promise<object> {
-    const result = await this.itemService.findPage(pagenationDto);
+  // 조건 검색
+  @Get('/search')
+  async search(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
+    return await this.itemService.search(searchTypeDto);
+  }
 
-    if (result) {
-      return result;
-    }
-    throw new NotFoundException(`not found id: ${pagenationDto.start}`);
+  @Get()
+  async findPage(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
+    return await this.itemService.findPage(searchTypeDto);
   }
 
   @Post()
@@ -68,7 +62,7 @@ export class ItemController {
   }
 
   @Delete('/:id')
-  async delete(@Param('id') id: string): Promise<Item> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<Item> {
     try {
       return await this.itemService.delete(id);
     } catch (err) {
@@ -78,7 +72,7 @@ export class ItemController {
 
   @Patch('/:id')
   async update(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateItemDto: UpdateItemDto,
   ): Promise<void> {
     try {

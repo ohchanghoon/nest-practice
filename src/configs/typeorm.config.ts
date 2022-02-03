@@ -15,5 +15,6 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   // true값을 주면 애플리케이션 다시 실행 시 엔티티안에서
   // 수정된 컬럼의 길이 타입 변경값등을 해당 테이븡르 Drop한 후 다시생성
   // 프로덕션모드에서 true로 하면 데이터 날라가니까 false로 설정
-  synchronize: dbConfig.synchronize,
+  // synchronize: dbConfig.synchronize,
+  synchronize: true,
 };

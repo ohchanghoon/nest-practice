@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { InsertItemDto, PagenationDto, UpdateItemDto } from './dto/item.dto';
+import { In, LessThan, MoreThan, Repository } from 'typeorm';
+import { InsertItemDto, SearchTypeDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 
 @Injectable()
@@ -15,48 +15,66 @@ export class ItemService {
     return this.itemRepo.find();
   }
 
-  async findOne(id: string): Promise<Item> {
+  async findOne(id: number): Promise<Item> {
     try {
-      // findOne은 에러를 반환하지 않고, undefined를 반환해서 findOneOrFail을 사용
       return (await this.itemRepo.findOne(id)) ?? null;
     } catch (err) {
       throw err;
     }
   }
 
-  async findPage(pagenationDto: any): Promise<object> {
-    const { start, take } = pagenationDto;
-
+  async findPage(searchTypeDto: SearchTypeDto): Promise<any> {
+    const { start, take } = searchTypeDto;
     try {
-      const found = await this.findOne(start);
-      if (found) {
-        const result = await this.itemRepo.find({
-          skip: parseInt(start) - 1,
-          take,
-        });
-        return {
-          result,
-          startId: parseInt(start),
-          takeId: parseInt(take),
-          lastId: result[result.length - 1].id,
-        };
-      }
-      return null;
+      const result = await this.itemRepo.find({
+        skip: start - 1,
+        take,
+      });
+
+      if (!result.length) return result;
+      return this.searchList(result);
     } catch (err) {
       throw err;
     }
   }
 
-  async search(type: object): Promise<any> {
-    const result = await this.itemRepo.find(type);
-    return result;
+  async search(query: SearchTypeDto): Promise<object> {
+    return await this.searchByProductionDate(query);
+  }
+
+  async searchByProductionDate(query: SearchTypeDto): Promise<object> {
+    const { start, take, productionDate, condition } = query;
+    const findInfo: any = { where: {} };
+
+    findInfo.where.name = In([...query.name.toString().split(',')]);
+    condition === 'more'
+      ? (findInfo.where.productionDate = MoreThan(productionDate))
+      : (findInfo.where.productionDate = LessThan(productionDate));
+
+    const found = await this.itemRepo.find({
+      ...findInfo,
+      skip: start - 1,
+      take,
+    });
+
+    if (!found.length) return found;
+    return this.searchList(found);
+  }
+
+  private searchList(found: Item[]): object | PromiseLike<object> {
+    return {
+      found,
+      startId: found[0].id,
+      getIds: found.length,
+      lastId: found[found.length - 1].id,
+    };
   }
 
   async create(insertItemDto: InsertItemDto): Promise<Item> {
     return await this.itemRepo.save(insertItemDto);
   }
 
-  async delete(id: string): Promise<Item> {
+  async delete(id: number): Promise<Item> {
     try {
       return await this.itemRepo.remove(await this.findOne(id));
     } catch (err) {
@@ -64,12 +82,12 @@ export class ItemService {
     }
   }
 
-  async update(id: string, updateItemDto: UpdateItemDto): Promise<void> {
+  async update(id: number, updateItemDto: UpdateItemDto): Promise<void> {
     try {
       const findOne = await this.findOne(id);
 
       findOne.name = updateItemDto.name;
-      findOne.productionYear = updateItemDto.productionYear;
+      findOne.productionDate = updateItemDto.productionDate;
       findOne.amount = updateItemDto.amount;
 
       await this.create(findOne);

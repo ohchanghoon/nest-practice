@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as config from 'config';
@@ -7,6 +7,7 @@ async function bootstrap() {
   // NestFactory를 활용해 Nest 애플리케이션 생성
   // 즉, AppModule을 인자로 받아서 NestApp을 생성
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(new ValidationPipe());
   const serverConfig = config.get('server');
   const port = serverConfig.port;
   // app.useGlobalPipes(
