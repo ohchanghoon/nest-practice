@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BoardStatus } from './board-status.enum';
-import { CreateBoardDto } from './dto/boards.dto';
+import { CreateBoardDto, SearchBoardDto } from './dto/boards.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BoardRepository } from './board.repository';
 import { Board } from './board.entity';
@@ -39,7 +39,7 @@ export class BoardsService {
     return found;
   }
 
-  async searchFilter(query): Promise<object> {
+  async searchFilter(query: SearchBoardDto): Promise<object> {
     const arr = Object.keys(query);
     const values = Object.values(query);
     const searchType: object = {
