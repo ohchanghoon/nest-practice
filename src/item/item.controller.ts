@@ -3,13 +3,17 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
-import { InsertItemDto, UpdateItemDto } from './dto/item.dto';
+import { QueryFailedError } from 'typeorm';
+import { InsertItemDto, SearchTypeDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 import { ItemService } from './item.service';
 
@@ -17,18 +21,37 @@ import { ItemService } from './item.service';
 export class ItemController {
   constructor(private itemService: ItemService) {}
 
-  @Get()
+  @Get('find')
   find() {
     return this.itemService.find();
   }
 
-  @Get('/:id')
-  async findOne(@Param('id') id: string) {
+  @Get('find/:id')
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     try {
-      return await this.itemService.findOne(id);
+      const result = await this.itemService.findOne(id);
+      if (result === null) {
+        return new NotFoundException(`not found id: ${id}`);
+      }
+      return result;
     } catch (err) {
-      throw new NotFoundException(`not found id: ${id}`);
+      if (err instanceof QueryFailedError) {
+        throw new InternalServerErrorException('db error');
+      } else {
+        throw new InternalServerErrorException('server error');
+      }
     }
+  }
+
+  // 조건 검색
+  @Get('/search')
+  async search(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
+    return await this.itemService.search(searchTypeDto);
+  }
+
+  @Get()
+  async findPage(@Query() searchTypeDto: SearchTypeDto): Promise<object> {
+    return await this.itemService.findPage(searchTypeDto);
   }
 
   @Post()
@@ -39,7 +62,7 @@ export class ItemController {
   }
 
   @Delete('/:id')
-  async delete(@Param('id') id: string): Promise<Item> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<Item> {
     try {
       return await this.itemService.delete(id);
     } catch (err) {
@@ -49,7 +72,7 @@ export class ItemController {
 
   @Patch('/:id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateItemDto: UpdateItemDto,
   ): Promise<void> {
     try {

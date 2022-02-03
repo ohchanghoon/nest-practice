@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -18,7 +19,7 @@ import { User } from 'src/auth/user.entity';
 import { BoardStatus } from './board-status.enum';
 import { Board } from './board.entity';
 import { BoardsService } from './boards.service';
-import { CreateBoardDto } from './dto/boards.dto';
+import { CreateBoardDto, SearchBoardDto } from './dto/boards.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation-pipe';
 
 @Controller('board')
@@ -30,9 +31,19 @@ export class BoardsController {
   constructor(private boardService: BoardsService) {}
 
   @Get()
-  find(@GetUser() user: User): Promise<Board[]> {
+  find(): Promise<Board[]> {
+    return this.boardService.find();
+  }
+
+  @Get('user')
+  userFind(@GetUser() user: User): Promise<Board[]> {
     this.logger.verbose(`${user.username} trying to get all boards`);
-    return this.boardService.find(user);
+    return this.boardService.userFind(user);
+  }
+
+  @Get('/search')
+  async searchFilter(@Query() query: SearchBoardDto): Promise<object> {
+    return await this.boardService.searchFilter(query);
   }
 
   @Get('/:id')

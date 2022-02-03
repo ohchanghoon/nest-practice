@@ -1,4 +1,11 @@
-import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class AuthCredentialsDto {
   //   @IsNotEmpty()
@@ -16,4 +23,16 @@ export class AuthCredentialsDto {
     message: 'password only english and number',
   })
   password: string;
+
+  @IsString()
+  @IsOptional()
+  nickname: string;
+
+  @IsNumber()
+  @IsOptional()
+  age: number;
+
+  @IsString()
+  @IsOptional()
+  birthday: string;
 }
