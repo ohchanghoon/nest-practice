@@ -1,16 +1,6 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Req,
-  UseGuards,
-  ValidationPipe,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credential.dto';
-import { GetUser } from './dto/get-user.decorator';
-import { User } from './user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -30,12 +20,5 @@ export class AuthController {
     @Body(ValidationPipe) authCredentialDto: AuthCredentialsDto,
   ): Promise<{ accessToken: string }> {
     return this.authService.signIn(authCredentialDto);
-  }
-
-  @Post('/test')
-  @UseGuards(AuthGuard())
-  // 커스텀데코레이터 생성
-  test(@GetUser() user: User) {
-    console.log(user);
   }
 }

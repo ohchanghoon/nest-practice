@@ -62,6 +62,8 @@ export class BoardsController {
         createBoardDto,
       )}`,
     );
+    console.log(user);
+
     return this.boardService.create(createBoardDto, user);
   }
 

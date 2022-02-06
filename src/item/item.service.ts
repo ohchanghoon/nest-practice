@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/user.entity';
 import { In, LessThan, MoreThan, Repository } from 'typeorm';
 import { InsertItemDto, SearchTypeDto, UpdateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
@@ -70,8 +71,13 @@ export class ItemService {
     };
   }
 
-  async create(insertItemDto: InsertItemDto): Promise<Item> {
-    return await this.itemRepo.save(insertItemDto);
+  async create(insertItemDto: InsertItemDto, user: User): Promise<Item> {
+    const item = {
+      ...insertItemDto,
+      user,
+    };
+
+    return await this.itemRepo.save(item);
   }
 
   async delete(id: number): Promise<Item> {
@@ -82,7 +88,11 @@ export class ItemService {
     }
   }
 
-  async update(id: number, updateItemDto: UpdateItemDto): Promise<void> {
+  async update(
+    id: number,
+    updateItemDto: UpdateItemDto,
+    user: User,
+  ): Promise<void> {
     try {
       const findOne = await this.findOne(id);
 
@@ -90,7 +100,7 @@ export class ItemService {
       findOne.productionDate = updateItemDto.productionDate;
       findOne.amount = updateItemDto.amount;
 
-      await this.create(findOne);
+      await this.create(findOne, user);
     } catch (err) {
       throw err;
     }

@@ -24,4 +24,7 @@ export class Board extends BaseEntity {
 
   @ManyToOne((type) => User, (user) => user.boards, { eager: false })
   user: User;
+
+  // @ManyToMany((type) => Item, (item) => item.boards, { eager: false })
+  // boards: Board[];
 }

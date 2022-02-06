@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber } from 'class-validator';
 import { Board } from 'src/boards/board.entity';
+import { Item } from 'src/item/item.entity';
 import {
   BaseEntity,
   Column,
@@ -38,4 +39,7 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => Board, (board) => board.user, { eager: true })
   boards: Board[];
+
+  @OneToMany((type) => Item, (item) => item.user, { eager: true })
+  item: Item;
 }
