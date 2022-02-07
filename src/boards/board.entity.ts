@@ -19,12 +19,9 @@ export class Board extends BaseEntity {
   @Column()
   description: string;
 
-  @Column()
+  @Column({ nullable: true })
   status: BoardStatus;
 
-  @ManyToOne((type) => User, (user) => user.boards, { eager: false })
+  @ManyToOne((type) => User, (user) => user.username)
   user: User;
-
-  // @ManyToMany((type) => Item, (item) => item.boards, { eager: false })
-  // boards: Board[];
 }

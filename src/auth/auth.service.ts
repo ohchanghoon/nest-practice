@@ -17,6 +17,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  async find() {
+    return this.userRepository.find();
+  }
+
   // 비동기적이기때문에 반환값을 Promise로 받음
   async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
     return this.userRepository.createUser(authCredentialsDto);

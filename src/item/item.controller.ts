@@ -62,7 +62,7 @@ export class ItemController {
   @Get('/search')
   async search(@Query() query: SearchBoardDto): Promise<object> {
     // return await this.itemService.search(query);
-    return await this.boardsService.searchFilter(query);
+    return await this.boardsService.searchFilter(query, 'item');
   }
 
   @Get()

@@ -1,10 +1,32 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
+import { BoardsService } from 'src/boards/boards.service';
+import { SearchBoardDto } from 'src/boards/dto/boards.dto';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credential.dto';
+// import { user } from './user.entity';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private boardsService: BoardsService,
+  ) {}
+
+  // @Get()
+  // find() {
+  //   return this.authService.find();
+  // }
+  @Get('search')
+  async search(@Query() query: SearchBoardDto): Promise<any> {
+    return await this.boardsService.searchFilter(query, 'user');
+  }
 
   @Post('/signup')
   signUp(

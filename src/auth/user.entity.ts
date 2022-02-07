@@ -5,10 +5,13 @@ import { Item } from 'src/item/item.entity';
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -25,8 +28,8 @@ export class User extends BaseEntity {
   @IsNotEmpty()
   password: string;
 
-  @Column({ nullable: true })
-  nickname: string;
+  @Column({ nullable: false })
+  nickname?: string;
 
   @Column({ nullable: true })
   @IsNumber()
@@ -37,9 +40,14 @@ export class User extends BaseEntity {
   @IsNumber()
   birthday: string;
 
-  @OneToMany((type) => Board, (board) => board.user, { eager: true })
-  boards: Board[];
-
-  @OneToMany((type) => Item, (item) => item.user, { eager: true })
+  @OneToMany((type) => Item, (item) => item.user, { eager: false })
   item: Item;
+  @CreateDateColumn()
+  created_at!: Date;
+
+  @UpdateDateColumn()
+  updated_at!: Date;
+
+  @DeleteDateColumn()
+  deleted_at?: Date;
 }

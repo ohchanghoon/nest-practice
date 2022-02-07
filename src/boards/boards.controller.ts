@@ -43,7 +43,7 @@ export class BoardsController {
 
   @Get('/search')
   async searchFilter(@Query() query: SearchBoardDto): Promise<object> {
-    return await this.boardService.searchFilter(query);
+    return await this.boardService.searchFilter(query, 'board');
   }
 
   @Get('/:id')
@@ -62,7 +62,6 @@ export class BoardsController {
         createBoardDto,
       )}`,
     );
-    console.log(user);
 
     return this.boardService.create(createBoardDto, user);
   }

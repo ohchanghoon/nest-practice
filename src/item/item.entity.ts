@@ -13,7 +13,7 @@ export class Item extends BaseEntity {
   id: number;
 
   @Column({ nullable: true })
-  name: string;
+  itemname: string;
 
   @Column({ nullable: true })
   brand: string;
@@ -24,17 +24,6 @@ export class Item extends BaseEntity {
   @Column({ nullable: true })
   amount: number;
 
-  @ManyToOne((type) => User, (user) => user.item, { eager: false })
+  @ManyToOne((type) => User, (user) => user.id, { eager: false })
   user: User;
-
-  // @ManyToMany((type) => Board, (board) => board.item, { eager: false })
-  // boards: Board[];
-  // @Column({ nullable: true })
-  // nickName: string;
-
-  // @Column({ nullable: true })
-  // age: number;
-
-  // @Column({ nullable: true })
-  // birthday: number;
 }

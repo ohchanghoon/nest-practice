@@ -47,7 +47,7 @@ export class ItemService {
     const { start, take, productionDate, condition } = query;
     const findInfo: any = { where: {} };
 
-    findInfo.where.name = In([...query.name.toString().split(',')]);
+    findInfo.where.name = In([...query.itemname.toString().split(',')]);
     condition === 'more'
       ? (findInfo.where.productionDate = MoreThan(productionDate))
       : (findInfo.where.productionDate = LessThan(productionDate));
@@ -96,7 +96,7 @@ export class ItemService {
     try {
       const findOne = await this.findOne(id);
 
-      findOne.name = updateItemDto.name;
+      findOne.itemname = updateItemDto.name;
       findOne.productionDate = updateItemDto.productionDate;
       findOne.amount = updateItemDto.amount;
 

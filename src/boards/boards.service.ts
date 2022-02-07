@@ -5,7 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BoardRepository } from './board.repository';
 import { Board } from './board.entity';
 import { User } from 'src/auth/user.entity';
-import { Any, getRepository, In } from 'typeorm';
+import { getRepository } from 'typeorm';
+import { Item } from 'src/item/item.entity';
 
 // 종속성을 주입하는 용도로써 다른 인젝터블데코레이터로 감싸서 모듈로 제공하며, 애플리케이션 전체에서 사용할 수 있다.
 @Injectable()
@@ -39,7 +40,10 @@ export class BoardsService {
     return found;
   }
 
-  async searchFilter(searchBoardDto: SearchBoardDto): Promise<object> {
+  async searchFilter(
+    searchBoardDto?: SearchBoardDto,
+    table?: any,
+  ): Promise<object> {
     const { start, take } = searchBoardDto;
     delete searchBoardDto.start;
     delete searchBoardDto.take;
@@ -80,15 +84,16 @@ export class BoardsService {
               operator = 'NOT IN';
               break;
           }
+
           i < arr.length - 1 ? (extra = 'AND ') : (extra = '');
 
-          query += `user.${item} ${operator} (:...${item}) ${extra}`;
+          query += `${item} ${operator} (:...${item}) ${extra}`;
           type[item] = values[i].split(',');
           continue;
         }
         i < arr.length - 1 ? (extra = 'AND ') : (extra = '');
 
-        query += `user.${item} ${operator} :${item} ${extra}`;
+        query += `${item} ${operator} :${item} ${extra}`;
         type[item] = values[i];
       } else {
         i < arr.length - 1 ? (extra = 'AND ') : (extra = '');
@@ -97,18 +102,44 @@ export class BoardsService {
         type[item] = values[i];
       }
     }
+    // const entity = `${table}`[0].toUpperCase() + `${table}`.slice(1);
 
-    const result = await getRepository(Board)
-      .createQueryBuilder('board')
-      .leftJoinAndSelect('board.user', 'user')
-      .skip(start ? start - 1 : 0)
-      .limit(take ? take : 0)
-      .where(`${query}`, {
-        ...type,
-      })
-      .getMany();
+    if (table === 'user') {
+      return await getRepository(User)
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.item', 'item')
+        .offset(start ? start - 1 : 0)
+        .limit(take ? take : 0)
+        .where(`${query}`, {
+          ...type,
+        })
+        .getMany();
+    }
 
-    return result;
+    if (table === 'board') {
+      return await getRepository(Board)
+        .createQueryBuilder('board')
+        .leftJoinAndSelect('board.user', 'user')
+        .leftJoinAndSelect('user.item', 'item')
+        .offset(start ? start - 1 : 0)
+        .limit(take ? take : 0)
+        .where(`${query}`, {
+          ...type,
+        })
+        .getMany();
+    }
+
+    if (table === 'item') {
+      return await getRepository(Item)
+        .createQueryBuilder('item')
+        .leftJoinAndSelect('item.user', 'user')
+        .offset(start ? start - 1 : 0)
+        .limit(take ? take : 0)
+        .where(`${query}`, {
+          ...type,
+        })
+        .getMany();
+    }
   }
 
   async create(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
