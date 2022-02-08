@@ -94,7 +94,7 @@ export class SearchTypeDto {
   take?: number;
 
   @IsOptional()
-  name?: string | [];
+  itemname?: string | [];
 
   // @IsOptional()
   // name__equal?: string | [];
