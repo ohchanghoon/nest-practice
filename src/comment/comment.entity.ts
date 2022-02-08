@@ -19,7 +19,7 @@ export class Comment extends BaseEntity {
   @Column()
   username: string;
 
-  @Column()
+  @Column({ nullable: true, default: 0 })
   depth: number;
 
   @ManyToOne((type) => Comment, (comment) => comment.board)

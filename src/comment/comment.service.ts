@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/user.entity';
 import { Repository } from 'typeorm';
 import { Comment } from './comment.entity';
-import { createCmtDto } from './dto/comment.dto';
+import { CreateCommentDto } from './dto/comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -12,9 +12,16 @@ export class CommentService {
     private cmtRepo: Repository<Comment>,
   ) {}
 
-  async createCmt(user: User, id: number, cmt: createCmtDto): Promise<any> {
-    console.log(user, id, cmt);
+  async find(): Promise<object> {
+    return await this.cmtRepo.find();
+  }
 
-    return 'hello';
+  async createComment(user: User, comment: CreateCommentDto): Promise<object> {
+    const username = user.username;
+    return this.cmtRepo.save({ username, ...comment });
+  }
+
+  async updateComment(id: number, comment: CreateCommentDto): Promise<object> {
+    return await this.cmtRepo.save({ id, ...comment });
   }
 }
