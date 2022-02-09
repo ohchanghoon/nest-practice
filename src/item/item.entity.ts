@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/auth/user.entity';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Item extends BaseEntity {
@@ -6,7 +13,7 @@ export class Item extends BaseEntity {
   id: number;
 
   @Column({ nullable: true })
-  name: string;
+  itemname: string;
 
   @Column({ nullable: true })
   brand: string;
@@ -17,12 +24,6 @@ export class Item extends BaseEntity {
   @Column({ nullable: true })
   amount: number;
 
-  // @Column({ nullable: true })
-  // nickName: string;
-
-  // @Column({ nullable: true })
-  // age: number;
-
-  // @Column({ nullable: true })
-  // birthday: number;
+  @ManyToOne((type) => User, (user) => user.id, { eager: false })
+  user: User;
 }

@@ -6,6 +6,7 @@ import { BoardRepository } from './board.repository';
 import { Board } from './board.entity';
 import { User } from 'src/auth/user.entity';
 import { getRepository } from 'typeorm';
+import { Item } from 'src/item/item.entity';
 
 // 종속성을 주입하는 용도로써 다른 인젝터블데코레이터로 감싸서 모듈로 제공하며, 애플리케이션 전체에서 사용할 수 있다.
 @Injectable()
@@ -39,60 +40,106 @@ export class BoardsService {
     return found;
   }
 
-  async searchFilter(query: SearchBoardDto): Promise<object> {
-    const arr = Object.keys(query);
-    const values = Object.values(query);
-    const searchType: object = {
-      username: String,
-      nickname: String,
-      birthday: String,
-      age: Number,
-    };
-    let searchQuery = '';
+  async searchFilter(
+    searchBoardDto?: SearchBoardDto,
+    table?: any,
+  ): Promise<object> {
+    const { start, take } = searchBoardDto;
+    delete searchBoardDto.start;
+    delete searchBoardDto.take;
+    const arr = Object.keys(searchBoardDto);
+    const values = Object.values(searchBoardDto);
+    const type: object = {};
+    let query = '';
 
     for (let i = 0; i < arr.length; i += 1) {
-      const searchItem = arr[i].split('__')[0];
-      const searchCondition = arr[i].split('__')[1];
+      const item = arr[i].split('__')[0];
+      const condition = arr[i].split('__')[1];
+      const value = values[i].split(',');
       let operator = '';
       let extra = '';
 
-      switch (searchCondition) {
-        case 'equal':
-          operator = '=';
-          break;
-        case 'notequal':
-          operator = '!=';
-          break;
-        case 'gte':
-          operator = '>';
-          break;
-        case 'lte':
-          operator = '<';
-          break;
-      }
+      if (condition) {
+        switch (condition) {
+          case 'equal':
+            operator = '=';
+            break;
+          case 'notequal':
+            operator = '!=';
+            break;
+          case 'gte':
+            operator = '>';
+            break;
+          case 'lte':
+            operator = '<';
+            break;
+        }
 
-      switch (i < arr.length - 1) {
-        case true:
-          extra = 'AND ';
-          break;
-        case false:
-          extra = '';
-          break;
-      }
+        if (value.length > 1) {
+          switch (operator) {
+            case '=':
+              operator = 'IN';
+              break;
+            case '!=':
+              operator = 'NOT IN';
+              break;
+          }
 
-      searchQuery += `user.${searchItem} ${operator} :${searchItem} ${extra}`;
-      searchType[searchItem] = values[i];
+          i < arr.length - 1 ? (extra = 'AND ') : (extra = '');
+
+          query += `${item} ${operator} (:...${item}) ${extra}`;
+          type[item] = values[i].split(',');
+          continue;
+        }
+        i < arr.length - 1 ? (extra = 'AND ') : (extra = '');
+
+        query += `${item} ${operator} :${item} ${extra}`;
+        type[item] = values[i];
+      } else {
+        i < arr.length - 1 ? (extra = 'AND ') : (extra = '');
+
+        query += `${item} Like :${item} ${extra}`;
+        type[item] = values[i];
+      }
+    }
+    // const entity = `${table}`[0].toUpperCase() + `${table}`.slice(1);
+
+    if (table === 'user') {
+      return await getRepository(User)
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.item', 'item')
+        .offset(start ? start - 1 : 0)
+        .limit(take ? take : 0)
+        .where(`${query}`, {
+          ...type,
+        })
+        .getMany();
     }
 
-    const result = await getRepository(Board)
-      .createQueryBuilder('board')
-      .leftJoinAndSelect('board.user', 'user')
-      .where(`${searchQuery}`, {
-        ...searchType,
-      })
-      .getMany();
+    if (table === 'board') {
+      return await getRepository(Board)
+        .createQueryBuilder('board')
+        .leftJoinAndSelect('board.user', 'user')
+        .leftJoinAndSelect('user.item', 'item')
+        .offset(start ? start - 1 : 0)
+        .limit(take ? take : 0)
+        .where(`${query}`, {
+          ...type,
+        })
+        .getMany();
+    }
 
-    return result;
+    if (table === 'item') {
+      return await getRepository(Item)
+        .createQueryBuilder('item')
+        .leftJoinAndSelect('item.user', 'user')
+        .offset(start ? start - 1 : 0)
+        .limit(take ? take : 0)
+        .where(`${query}`, {
+          ...type,
+        })
+        .getMany();
+    }
   }
 
   async create(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
