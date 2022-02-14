@@ -15,7 +15,7 @@ import { BoardsModule } from 'src/boards/boards.module';
     JwtModule.register({
       secret: 'Secret1234',
       signOptions: {
-        expiresIn: 3600,
+        expiresIn: 36000,
       },
     }),
     TypeOrmModule.forFeature([UserRepository]),
